@@ -1,22 +1,31 @@
-# k8s/daemonset-xdp.yaml (attach XDP + create maps)
-#DaemonSet: XDP loader
+# k8s/daemonset-dpdk.yaml
+# DaemonSet: DPDK fast path
 apiVersion: apps/v1
 kind: DaemonSet
-metadata: { name: pcf-xdp, namespace: kube-system }
+metadata: { name: pcf-dpdk, namespace: kube-system }
 spec:
-  selector: { matchLabels: { app: pcf-xdp } }
+  selector: { matchLabels: { app: pcf-dpdk } }
   template:
-    metadata: { labels: { app: pcf-xdp } }
+    metadata: { labels: { app: pcf-dpdk } }
     spec:
       hostNetwork: true
+      hostPID: true
       containers:
-      - name: xdp
-        image: your-registry/pcf-xdp-loader:latest
+      - name: dpdk
+        image: your-registry/pcf-dpdk:latest
         securityContext: { privileged: true }
-        env: [{ name: NIC, value: "ens5f0" }, { name: QUEUES, value: "0,1" }]
+        env:
+        - { name: NIC, value: "ens5f0" }
+        - { name: QUEUES, value: "0,1" }
+        - { name: HUGE, value: "1024" }
+        resources:
+          requests: { cpu: "4", memory: "2Gi", hugepages-2Mi: "1024Mi" }
+          limits:   { cpu: "4", memory: "2Gi", hugepages-2Mi: "1024Mi" }
         volumeMounts:
-        - { name: bpffs, mountPath: /sys/fs/bpf }
-        - { name: modules, mountPath: /lib/modules, readOnly: true }
+        - { name: hugepages, mountPath: /dev/hugepages }
+        - { name: bpffs,     mountPath: /sys/fs/bpf }
       volumes:
-      - { name: bpffs, hostPath: { path: /sys/fs/bpf, type: DirectoryOrCreate } }
-      - { name: modules, hostPath: { path: /lib/modules, type: Directory } }
+      - name: hugepages
+        emptyDir: { medium: HugePages }
+      - name: bpffs
+        hostPath: { path: /sys/fs/bpf, type: DirectoryOrCreate }
