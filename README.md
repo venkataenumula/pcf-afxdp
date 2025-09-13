@@ -102,13 +102,13 @@ sudo ./scripts/prepare-node.sh \
   --huge-mb 1024 \
   --queues 2
 -# does: hugepages setup, mount /sys/fs/bpf, disable GRO/LRO on the target NIC queues, set RPS/XPS
-#---
+#
 Build locally:
--# XDP
+# XDP
 pushd xdp && make V=1 && popd
--# DPDK app (assumes DPDK dev libs or builds with container)
+# DPDK app (assumes DPDK dev libs or builds with container)
 pushd dpdk && cmake -B build && cmake --build build -j && popd
--# Control plane
+# Control plane
 pushd control && go build -o pcfctl ./... && popd
 
 Docker images
