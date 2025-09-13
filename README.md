@@ -101,6 +101,7 @@ Node prep (RHEL 8/9 example) :
     # does: hugepages setup, mount /sys/fs/bpf, disable GRO/LRO on the target NIC queues, set RPS/XPS
 
 Build locally:
+
     # XDP
     pushd xdp && make V=1 && popd
     # DPDK app (assumes DPDK dev libs or builds with container)
@@ -108,7 +109,8 @@ Build locally:
     # Control plane
     pushd control && go build -o pcfctl ./... && popd
 
-Docker images
+Docker images:
+
     make -f build/docker.mk dpdk-image    # builds your-registry/pcf-dpdk:latest
     make -f build/docker.mk ctl-image     # builds your-registry/pcf-ctl:latest
 
