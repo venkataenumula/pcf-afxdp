@@ -93,3 +93,28 @@ Maps (pinned at /sys/fs/bpf/pcf/)
   
   FIPS: control plane crypto (if any) should use FIPS-approved libs; data plane doesn’t require crypto.
 
+
+# Build & run (POC path)
+Node prep (RHEL 8/9 example)
+#---
+sudo ./scripts/prepare-node.sh \
+  --nic ens5f0 \
+  --huge-mb 1024 \
+  --queues 2
+-# does: hugepages setup, mount /sys/fs/bpf, disable GRO/LRO on the target NIC queues, set RPS/XPS
+#---
+Build locally:
+-# XDP
+pushd xdp && make V=1 && popd
+-# DPDK app (assumes DPDK dev libs or builds with container)
+pushd dpdk && cmake -B build && cmake --build build -j && popd
+-# Control plane
+pushd control && go build -o pcfctl ./... && popd
+
+Docker images
+make -f build/docker.mk dpdk-image    # builds your-registry/pcf-dpdk:latest
+make -f build/docker.mk ctl-image     # builds your-registry/pcf-ctl:latest
+
+
+
+
