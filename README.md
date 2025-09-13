@@ -6,9 +6,7 @@ AF_XDP + DPDK fast path with a tiny XDP steering layer
   
   User-space data plane (DPDK AF_XDP): a containerized DPDK service binds to AF_XDP sockets (one per RX queue), processes packets (TTL rewrite, ACL, NAT, mirror, counters), and transmits either:
   
-  back to the kernel (via AF_XDP TX → devmap redirect), or
-  
-  directly out the NIC queue (still via AF_XDP path).
+  back to the kernel (via AF_XDP TX → devmap redirect), or  directly out the NIC queue (still via AF_XDP path).
   
   Control plane (genetlink or userspace API): a small controller pushes 5-tuple rules and actions into pinned maps; exposes REST/gRPC for ops, and syncs with your existing PCF logic if you keep it.
 
